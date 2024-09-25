@@ -1,8 +1,7 @@
 import { takeLatest, call, put } from 'redux-saga/effects';
 import { getLivePollHistoryApi } from '../api/poll.api';
 import { fetchPollHistoryRequest } from '../reducers/pollHIsttoryReducer';
-import socket from '../utils/socket';
-import { fetchLivePollSuccess } from '../reducers/livePollReducer';
+import { fetchLivePollFailure, fetchLivePollSuccess } from '../reducers/livePollReducer';
 
 function* fetchPollHistory({ payload }) {
     try {
