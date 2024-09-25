@@ -4,6 +4,11 @@ import { makeStyles } from '@mui/styles';
 import TimerIcon from '@mui/icons-material/Timer';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import apiService from '../../../utils/apiService';
+import { fetchActivePollRequest } from '../../../reducers/pollReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import QuestionLoader from '../../../components/QuestionLoader';
+import { submitPollAnswer, submitPollAnswerApi } from '../../../api/poll.api';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -104,89 +109,98 @@ const useStyles = makeStyles((theme) => ({
 
 const StudentPoll = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { data: pollData, loading } = useSelector(state => state.poll);
+
     const [selectedOption, setSelectedOption] = useState('');
-    const [question, setQuestion] = useState({
-        id: 1,
-        text: 'Which planet is known as the Red Planet?',
-        options: ['Mars', 'Venus', 'Jupiter', 'Saturn'],
-    });
+
     useEffect(() => {
-        getPoll();
+        dispatch(fetchActivePollRequest());
     }, [])
-    const getPoll = async () => {
-        const pollData = await apiService({ url: '/poll', method: 'GET' });
-        console.log(pollData);
-    }
+
     const handleOptionChange = (event) => {
         setSelectedOption(event.target.value);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (selectedOption) {
-            console.log(`Selected answer: ${selectedOption}`);
+            const payload = {
+                question_id: pollData.id,
+                selected_option: selectedOption
+            }
+            const response = await submitPollAnswerApi(payload);
+            if (response) {
+                navigate('/student/poll-result', { replace: true });
+            }
             // Handle submission logic here
         }
     };
+    if (loading) {
+        return (<QuestionLoader />)
+    } else if (pollData) {
+        return (
+            <Box className={classes.container}>
+                <Paper className={classes.paper}>
+                    {/* Question Section */}
+                    <Box className={classes.questionHeader}>
+                        <Typography variant="h5" className={classes.questionText}>
+                            Question {pollData.id}
+                        </Typography>
+                        <Box className={classes.timer}>
+                            <TimerIcon className={classes.timerIcon} />
+                            <Typography variant="body1" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                                00:15
+                            </Typography>
+                        </Box>
+                    </Box>
 
-    return (
-        <Box className={classes.container}>
-            <Paper className={classes.paper}>
-                {/* Question Section */}
-                <Box className={classes.questionHeader}>
-                    <Typography variant="h5" className={classes.questionText}>
-                        Question 1
-                    </Typography>
-                    <Box className={classes.timer}>
-                        <TimerIcon className={classes.timerIcon} />
-                        <Typography variant="body1" sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                            00:15
+                    <Box className={classes.questionBox}>
+                        <Typography variant="body1">
+                            {pollData.question}
                         </Typography>
                     </Box>
-                </Box>
 
-                <Box className={classes.questionBox}>
-                    <Typography variant="body1">
-                        {question.text}
-                    </Typography>
-                </Box>
+                    {/* Options */}
+                    <RadioGroup value={selectedOption} onChange={handleOptionChange} className={classes.options}>
+                        {pollData.options.map((option, index) => (
+                            <Box
+                                key={index}
+                                className={selectedOption === option ? classes.selectedOption : classes.normalOption}
+                                display="flex"
+                                alignItems="center"
+                                padding={2}
+                            >
+                                <Box className={classes.numberCircle}>{index + 1}</Box>
+                                <FormControlLabel
+                                    value={option.text}
+                                    control={<Radio color="primary" />}
+                                    label={option.text}
+                                />
+                            </Box>
+                        ))}
+                    </RadioGroup>
 
-                {/* Options */}
-                <RadioGroup value={selectedOption} onChange={handleOptionChange} className={classes.options}>
-                    {question.options.map((option, index) => (
-                        <Box
-                            key={index}
-                            className={selectedOption === option ? classes.selectedOption : classes.normalOption}
-                            display="flex"
-                            alignItems="center"
-                            padding={2}
-                        >
-                            <Box className={classes.numberCircle}>{index + 1}</Box>
-                            <FormControlLabel
-                                value={option}
-                                control={<Radio color="primary" />}
-                                label={option}
-                            />
-                        </Box>
-                    ))}
-                </RadioGroup>
+                    {/* Submit Button */}
+                    <Button
+                        variant="contained"
+                        className={classes.submitButton}
+                        onClick={handleSubmit}
+                        disabled={!selectedOption}
+                    >
+                        Submit
+                    </Button>
+                </Paper>
 
-                {/* Submit Button */}
-                <Button
-                    variant="contained"
-                    className={classes.submitButton}
-                    onClick={handleSubmit}
-                    disabled={!selectedOption}
-                >
-                    Submit
-                </Button>
-            </Paper>
-
-            {/* Floating Chat Button */}
-            <Fab color="primary" aria-label="chat" className={classes.fabChat}>
-                <ChatBubbleOutlineIcon />
-            </Fab>
-        </Box>
-    );
+                {/* Floating Chat Button */}
+                <Fab color="primary" aria-label="chat" className={classes.fabChat}>
+                    <ChatBubbleOutlineIcon />
+                </Fab>
+            </Box>
+        );
+    } else {
+        <span>No Questions Available</span>
+    }
 };
 
 export default StudentPoll;

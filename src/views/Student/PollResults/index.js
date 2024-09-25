@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TeachePollResults = () => {
+const StudentPollResults = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const navigate = useNavigate()
@@ -121,12 +121,6 @@ const TeachePollResults = () => {
                 {/* Poll Results Section */}
                 <Paper className={classes.pollPaper}>
                     <PollResults result={pollData} />
-                    {
-                        !pollData.continuePolling &&
-                        <Button variant="contained" color="primary" className={classes.askQuestionButton} onClick={postNewQuestion}>
-                            + Ask a new question
-                        </Button>
-                    }
                 </Paper>
 
                 {/* Floating Chat Button */}
@@ -192,4 +186,4 @@ const TeachePollResults = () => {
         return null
 };
 
-export default TeachePollResults;
+export default StudentPollResults;

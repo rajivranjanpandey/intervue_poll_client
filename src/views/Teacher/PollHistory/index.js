@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Typography, Box, Paper, LinearProgress } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchPollHistoryRequest } from '../../../reducers/pollHIsttoryReducer';
+import PollResults from '../../../components/PollResults';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -60,21 +63,26 @@ const pollHistoryData = [
 
 const TeacherPollHistory = () => {
     const classes = useStyles();
-
+    const dispatch = useDispatch();
+    const { data, loading } = useSelector(state => state.pollHistory);
+    useEffect(() => {
+        dispatch(fetchPollHistoryRequest());
+    }, [])
     return (
         <Box className={classes.container}>
             <Typography variant="h4" color="text.primary" sx={{ mb: 4 }}>
                 View <strong>Poll History</strong>
             </Typography>
 
-            {pollHistoryData.map((poll, index) => (
-                <Paper key={index} className={classes.pollPaper}>
-                    <Typography variant="h5" color="text.primary">
+            {data.map((poll, index) => (
+                <Paper key={`poll_${index}`} className={classes.pollPaper}>
+                    <PollResults result={poll} />
+                    {/* <Typography variant="h5" color="text.primary">
                         Question {index + 1}
                     </Typography>
-
+                
                     <Typography variant="body1" color="text.primary" sx={{ mt: 2 }}>
-                        {poll.question}
+                        {poll.question.question}
                     </Typography>
 
                     {poll.results.map((result, resultIndex) => (
@@ -89,7 +97,7 @@ const TeacherPollHistory = () => {
                                 {result.percentage}%
                             </Typography>
                         </Box>
-                    ))}
+                    ))} */}
                 </Paper>
             ))}
         </Box>

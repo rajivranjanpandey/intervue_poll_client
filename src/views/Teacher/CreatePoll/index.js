@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box, Grid, Paper, RadioGroup, FormControlLabel, Radio, Select, MenuItem } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import socket from '../../../utils/socket';
+import { createPollApi } from '../../../api/poll.api';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -29,12 +32,13 @@ const useStyles = makeStyles((theme) => ({
 
 const TeacherCreatePoll = () => {
     const classes = useStyles();
+    const navigate = useNavigate();
     const [question, setQuestion] = useState('');
-    const [options, setOptions] = useState([{ text: '', correct: null }]);
+    const [options, setOptions] = useState([{ text: '', correct: false }]);
     const [pollDuration, setPollDuration] = useState(60);
 
     const handleAddOption = () => {
-        setOptions([...options, { text: '', correct: null }]);
+        setOptions([...options, { text: '', correct: false }]);
     };
 
     const handleOptionChange = (index, value) => {
@@ -49,8 +53,16 @@ const TeacherCreatePoll = () => {
         setOptions(newOptions);
     };
 
-    const handleCreatePoll = () => {
+
+    const handleCreatePoll = async () => {
         console.log('Poll Created', { question, options, pollDuration });
+        const response = await createPollApi({
+            question,
+            options
+        });
+        if (response) {
+            navigate('/teacher/poll-result');
+        }
     };
 
     return (
@@ -113,6 +125,7 @@ const TeacherCreatePoll = () => {
                         </Grid>
                     </Grid>
                 ))}
+                <Button variant='outlined' color='primary' className={classes.button} onClick={handleAddOption}>Add More Option</Button>
 
                 <Button
                     variant="contained"

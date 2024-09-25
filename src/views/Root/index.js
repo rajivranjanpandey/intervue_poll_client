@@ -63,7 +63,7 @@ const Root = () => {
             if (selectedRole === 'teacher') {
                 socket.emit('register', { role: selectedRole, name: 'Teacher' });
 
-                navigate('/teacher');
+                navigate('/teacher/create-poll');
             } else {
                 navigate('/student/register');
             }

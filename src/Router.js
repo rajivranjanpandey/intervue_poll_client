@@ -6,6 +6,7 @@ import StudentRegister from "./views/Student/Register";
 import TeacherCreatePoll from "./views/Teacher/CreatePoll";
 import TeachePollResults from "./views/Teacher/PollResults";
 import TeacherPollHistory from "./views/Teacher/PollHistory";
+import StudentPollResults from "./views/Student/PollResults";
 
 const router = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
                     {
                         path: "register",
                         element: <RoleBasedRoute><StudentRegister /></RoleBasedRoute>
+                    },
+                    {
+                        path: "poll-result",
+                        element: <RoleBasedRoute><StudentPollResults /></RoleBasedRoute>
                     }
                 ]
             },

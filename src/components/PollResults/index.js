@@ -22,37 +22,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const PollResults = () => {
+const PollResults = ({ result }) => {
     const classes = useStyles();
-    const [question, setQuestion] = useState({
-        id: 1,
-        text: 'Which planet is known as the Red Planet?',
-        options: ['Mars', 'Venus', 'Jupiter', 'Saturn'],
-    });
-
-    // const handleAddOption = () => {
-    //     setOptions([...options, { text: '', correct: null }]);
-    // };
-
-    // const handleOptionChange = (index, value) => {
-    //     const newOptions = [...options];
-    //     newOptions[index].text = value;
-    //     setOptions(newOptions);
-    // };
-
-    // const handleCorrectChange = (index, value) => {
-    //     const newOptions = [...options];
-    //     newOptions[index].correct = value === 'yes';
-    //     setOptions(newOptions);
-    // };
-
-
-    const pollResults = [
-        { option: 'Mars', percentage: 75 },
-        { option: 'Venus', percentage: 5 },
-        { option: 'Jupiter', percentage: 5 },
-        { option: 'Saturn', percentage: 15 },
-    ];
+    const { question, answers } = result;
 
     return (
 
@@ -62,20 +34,24 @@ const PollResults = () => {
             </Typography>
 
             <Typography variant="body1" color="text.primary" sx={{ mt: 2 }}>
-                {question.text}
+                {question.question}
             </Typography>
 
-            {pollResults.map((result, index) => (
-                <Box key={index} className={classes.resultBox}>
-                    <Box className={classes.resultBar}>
-                        <Typography variant="body1" color="text.primary">
-                            {result.option}
-                        </Typography>
-                        <LinearProgress variant="determinate" value={result.percentage} />
+            {question.options.map((option, index) => {
+                const selectionPercent = answers[index + 1].selection_percent;
+                return (
+                    <Box key={index} className={classes.resultBox}>
+                        <Box className={classes.resultBar}>
+                            <Typography variant="body1" color="text.primary">
+                                {option.text}
+                            </Typography>
+                            <LinearProgress variant="determinate" value={selectionPercent} />
+                        </Box>
+                        <Typography className={classes.selectionPercent}>{selectionPercent}%</Typography>
                     </Box>
-                    <Typography className={classes.resultPercentage}>{result.percentage}%</Typography>
-                </Box>
-            ))}
+                )
+            }
+            )}
 
         </>
     );
