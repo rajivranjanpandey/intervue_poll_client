@@ -7,7 +7,7 @@ function* getPoll({ payload }) {
         console.log('get poll called')
         const data = yield getActivePollApi(payload);
         if (data)
-            yield put(fetchActivePollSuccess(data));
+            yield put(fetchActivePollSuccess(data.poll));
     } catch (error) {
         console.error('Error in fetching active poll data', error);
         fetchActivePollFailure();

@@ -38,7 +38,7 @@ const PollResults = ({ result }) => {
             </Typography>
 
             {question.options.map((option, index) => {
-                const selectionPercent = answers[index + 1].selection_percent;
+                const selectionPercent = answers[option.text].selection_percent;
                 return (
                     <Box key={index} className={classes.resultBox}>
                         <Box className={classes.resultBar}>

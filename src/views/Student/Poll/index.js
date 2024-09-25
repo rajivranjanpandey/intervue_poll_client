@@ -4,11 +4,12 @@ import { makeStyles } from '@mui/styles';
 import TimerIcon from '@mui/icons-material/Timer';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import apiService from '../../../utils/apiService';
-import { fetchActivePollRequest } from '../../../reducers/pollReducer';
+import { fetchActivePollRequest, fetchActivePollSuccess } from '../../../reducers/pollReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import QuestionLoader from '../../../components/QuestionLoader';
 import { submitPollAnswer, submitPollAnswerApi } from '../../../api/poll.api';
 import { useNavigate } from 'react-router-dom';
+import socket from '../../../utils/socket';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -117,6 +118,7 @@ const StudentPoll = () => {
 
     useEffect(() => {
         dispatch(fetchActivePollRequest());
+        socket.on('newPoll', (dt) => dispatch(fetchActivePollSuccess(dt)));
     }, [])
 
     const handleOptionChange = (event) => {
@@ -129,10 +131,11 @@ const StudentPoll = () => {
                 question_id: pollData.id,
                 selected_option: selectedOption
             }
-            const response = await submitPollAnswerApi(payload);
-            if (response) {
-                navigate('/student/poll-result', { replace: true });
-            }
+            // const response = await submitPollAnswerApi(payload);
+            socket.emit('submitAnswer', payload);
+            // if (response) {
+            navigate('/student/poll-result', { replace: true });
+            // }
             // Handle submission logic here
         }
     };

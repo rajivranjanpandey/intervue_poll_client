@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define the base URL
-const BASE_URL = process.env.REACT_APP_API_CONN_URI // Replace this with your actual base URL
+const BASE_URL = process.env.REACT_APP_API_CONN_URI + '/api' // Replace this with your actual base URL
 
 // apiService function
 const apiService = async ({ url, method = 'GET', body = null, headers = {} }) => {

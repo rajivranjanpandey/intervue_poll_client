@@ -6,7 +6,7 @@ import { makeStyles } from '@mui/styles';
 import PollResults from '../../../components/PollResults';
 import { fetchActivePollRequest } from '../../../reducers/pollReducer';
 import socket from '../../../utils/socket';
-import { fetchLivePollRequest } from '../../../reducers/livePollReducer';
+import { fetchLivePollRequest, fetchLivePollSuccess } from '../../../reducers/livePollReducer';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -83,7 +83,10 @@ const TeachePollResults = () => {
     const participants = [];
     useEffect(() => {
         dispatch(fetchLivePollRequest());
-
+        socket.on('liveResults', (data) => {
+            console.log('live connection feycjed data', data)
+            dispatch(fetchLivePollSuccess(data));
+        })
     }, [])
     const handleTabChange = (event, newValue) => {
         setTab(newValue);
